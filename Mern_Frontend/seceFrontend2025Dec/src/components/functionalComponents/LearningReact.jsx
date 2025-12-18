@@ -17,7 +17,7 @@ const LearningReact = () => {
             <hr />
             
             <h2>Props Example</h2>
-            <Props hi="Hello Venishaa!!" grade="12th" age={18} img="\vite.svg" />
+            <Props hi="Hello!!" grade="12th" age={18} img="\vite.svg" />
         
 
             <hr />
