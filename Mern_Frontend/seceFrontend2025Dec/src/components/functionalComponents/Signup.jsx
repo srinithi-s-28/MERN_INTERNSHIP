@@ -13,7 +13,7 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("https://winter-internship-9ws1.onrender.com/signup", formData);
+      const response = await axios.post("http://localhost:8001/signup", formData);
       setMessage("Signup successful!");
       console.log(response.data);
     } catch (error) {

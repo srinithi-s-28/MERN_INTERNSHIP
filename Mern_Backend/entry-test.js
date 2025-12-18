@@ -1,40 +1,33 @@
 const express = require('express')
-const mdb = require('mongoose');
 const cors = require('cors');
-const Signup = require('./models/SignupSchema');
 const app = express()
 const PORT = 8001 
+
+// In-memory storage for testing
+let users = [];
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-mdb.connect("mongodb://localhost:27017/Mern_Frontend")
-.then(() => {
-    console.log('connected to database successfully')
-})
-.catch((err) => {
-    console.log("Unsuccessful connection", err);
-})
 
 app.get('/', (req, res) => {
     res.send('Backend server is running successfully')
 })
 
 // Signup route
-app.post('/signup', async (req, res) => {
+app.post('/signup', (req, res) => {
     try {
         const { email, username, password } = req.body;
         
         // Check if user already exists
-        const existingUser = await Signup.findOne({ email });
+        const existingUser = users.find(user => user.email === email);
         if (existingUser) {
             return res.status(400).json({ Message: "User already exists" });
         }
         
         // Create new user
-        const newUser = new Signup({ name: username, email, password });
-        await newUser.save();
+        const newUser = { name: username, email, password };
+        users.push(newUser);
         
         res.status(201).json({ Message: "User created successfully" });
     } catch (error) {
@@ -43,12 +36,12 @@ app.post('/signup', async (req, res) => {
 });
 
 // Login route
-app.post('/login', async (req, res) => {
+app.post('/login', (req, res) => {
     try {
         const { email, password } = req.body;
         
         // Find user
-        const user = await Signup.findOne({ email });
+        const user = users.find(user => user.email === email);
         if (!user) {
             return res.status(400).json({ Message: "User not found" });
         }
