@@ -1,80 +1,81 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
-const Signup = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+function Signup() {
+  const [formData, setFormData] = useState({ email: "", username: "", password: "" });
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
+    try {
+      const response = await axios.post("https://winter-internship-9ws1.onrender.com/signup", formData);
+      setMessage("Signup successful!");
+      console.log(response.data);
+    } catch (error) {
+      setMessage(error.response?.data?.Message || "Signup failed");
     }
-    
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
-    alert('Signup successful! Please login.');
-    navigate('/login');
   };
 
   return (
     <div>
-      <h2>Sign Up</h2>
+      <h2>Signup</h2>
+      {message && <p style={{color: message.includes('successful') ? 'green' : 'red'}}>{message}</p>}
       <form onSubmit={handleSubmit}>
         <div>
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-          />
-        </div>
-        <br />
-        <div>
-          <input
-            type="email"
-            placeholder="Email"
+          <label>Email</label><br />
+          <input 
+            type="email" 
+            name="email" 
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            required
+            onChange={handleChange}
+            required 
           />
         </div>
+
         <br />
+
         <div>
-          <input
-            type="password"
-            placeholder="Password"
+          <label>Username</label><br />
+          <input 
+            type="text" 
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            required 
+          />
+        </div>
+
+        <br />
+
+        <div>
+          <label>Password</label><br />
+          <input 
+            type="password" 
+            name="password"
             value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            required
+            onChange={handleChange}
+            required 
           />
         </div>
+
         <br />
-        <div>
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={formData.confirmPassword}
-            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-            required
-          />
-        </div>
-        <br />
-        <div>
-          <button type="submit">Sign Up</button>
-        </div>
+
+        <button type="submit">Signup</button>
       </form>
-      {error && <p>{error}</p>}
-      <p>Already have an account? <Link to="/login">Login</Link></p>
+
+      <br />
+
+      <p>
+        Already have an account?
+        <Link to="/login"> Login</Link>
+      </p>
     </div>
   );
-};
+}
 
 export default Signup;

@@ -1,55 +1,68 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
-const Login = () => {
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+function Login() {
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (credentials.email === 'user@example.com' && credentials.password === 'password') {
-      alert('Login successful!');
-      navigate('/home');
-    } else {
-      setError('Invalid credentials. Please try signing up.');
-      setTimeout(() => navigate('/signup'), 2000);
+    try {
+      const response = await axios.post("https://winter-internship-9ws1.onrender.com/login", formData);
+      setMessage("Login successful!");
+      console.log(response.data);
+    } catch (error) {
+      setMessage(error.response?.data?.Message || "Login failed");
     }
   };
 
   return (
     <div>
       <h2>Login</h2>
+      {message && <p style={{color: message.includes('successful') ? 'green' : 'red'}}>{message}</p>}
       <form onSubmit={handleSubmit}>
         <div>
-          <input
-            type="email"
-            placeholder="Email"
-            value={credentials.email}
-            onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-            required
+          <label>Email</label><br />
+          <input 
+            type="email" 
+            name="email" 
+            value={formData.email}
+            onChange={handleChange}
+            required 
           />
         </div>
+
         <br />
+
         <div>
-          <input
-            type="password"
-            placeholder="Password"
-            value={credentials.password}
-            onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-            required
+          <label>Password</label><br />
+          <input 
+            type="password" 
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required 
           />
         </div>
+
         <br />
-        <div>
-          <button type="submit">Login</button>
-        </div>
+
+        <button type="submit">Login</button>
       </form>
-      {error && <p>{error}</p>}
-      <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
+
+      <br />
+
+      <p>
+        Don't have an account?
+        <Link to="/signup"> Sign up</Link>
+      </p>
     </div>
   );
-};
+}
 
 export default Login;
